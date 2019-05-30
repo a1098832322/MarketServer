@@ -1,0 +1,359 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wishes.market.mapper.CommodityDoMapperExt">
+  <resultMap id="BaseResultMap" type="com.wishes.market.model.CommodityDo">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="commodity_name" jdbcType="VARCHAR" property="commodityName" />
+    <result column="commodity_type" jdbcType="INTEGER" property="commodityType" />
+    <result column="commodity_price" jdbcType="DOUBLE" property="commodityPrice" />
+    <result column="commodity_total" jdbcType="BIGINT" property="commodityTotal" />
+    <result column="commodity_surplus" jdbcType="BIGINT" property="commoditySurplus" />
+    <result column="is_deleted" jdbcType="VARCHAR" property="isDeleted" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.wishes.market.model.CommodityDo">
+    <result column="commodity_info" jdbcType="LONGVARCHAR" property="commodityInfo" />
+    <result column="commodity_img" jdbcType="LONGVARCHAR" property="commodityImg" />
+    <result column="commodity_other_img_urls" jdbcType="LONGVARCHAR" property="commodityOtherImgUrls" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, commodity_name, commodity_type, commodity_price, commodity_total, commodity_surplus, 
+    is_deleted
+  </sql>
+  <sql id="Blob_Column_List">
+    commodity_info, commodity_img, commodity_other_img_urls
+  </sql>
+  <select id="selectByExampleWithBLOBs" parameterType="com.wishes.market.model.CommodityDoExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from t_business_commodity
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="pageDto != null">
+      limit ${pageDto.offset},${pageDto.pageSize}
+    </if>
+  </select>
+  <select id="selectByExample" parameterType="com.wishes.market.model.CommodityDoExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from t_business_commodity
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="oredCriteria.size != 0">
+      and is_deleted = 'N'
+    </if>
+    <if test="oredCriteria.size == 0">
+      where is_deleted = 'N'
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="pageDto != null">
+      limit ${pageDto.offset},${pageDto.pageSize}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="Long" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from t_business_commodity
+    where id = #{id,jdbcType=INTEGER}
+    and is_deleted = 'N'
+  </select>
+  <update id="deleteByPrimaryKey" parameterType="com.wishes.market.model.CommodityDo">
+    delete from t_business_commodity
+    where id = #{id,jdbcType=INTEGER}
+    update t_business_commodity set is_deleted = 'Y',update_user=#{updateUser,jdbcType=VARCHAR},update_time=sysdate() where ID = #{id,jdbcType=NUMERIC}
+  </update>
+  <insert id="insert" parameterType="com.wishes.market.model.CommodityDo">
+    <selectKey keyProperty="id" resultType="long">
+      select LAST_INSERT_ID()
+    </selectKey>
+    insert into t_business_commodity (id, commodity_name, commodity_type, 
+      commodity_price, commodity_total, commodity_surplus, 
+      is_deleted, commodity_info, commodity_img, 
+      commodity_other_img_urls)
+    values (#{id,jdbcType=INTEGER}, #{commodityName,jdbcType=VARCHAR}, #{commodityType,jdbcType=INTEGER}, 
+      #{commodityPrice,jdbcType=DOUBLE}, #{commodityTotal,jdbcType=BIGINT}, #{commoditySurplus,jdbcType=BIGINT}, 
+      #{isDeleted,jdbcType=VARCHAR}, #{commodityInfo,jdbcType=LONGVARCHAR}, #{commodityImg,jdbcType=LONGVARCHAR}, 
+      #{commodityOtherImgUrls,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.wishes.market.model.CommodityDo">
+    <selectKey keyProperty="id" resultType="long">
+      select LAST_INSERT_ID()
+    </selectKey>
+    insert into t_business_commodity
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="commodityName != null">
+        commodity_name,
+      </if>
+      <if test="commodityType != null">
+        commodity_type,
+      </if>
+      <if test="commodityPrice != null">
+        commodity_price,
+      </if>
+      <if test="commodityTotal != null">
+        commodity_total,
+      </if>
+      <if test="commoditySurplus != null">
+        commodity_surplus,
+      </if>
+      <if test="isDeleted != null">
+        is_deleted,
+      </if>
+      <if test="commodityInfo != null">
+        commodity_info,
+      </if>
+      <if test="commodityImg != null">
+        commodity_img,
+      </if>
+      <if test="commodityOtherImgUrls != null">
+        commodity_other_img_urls,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="commodityName != null">
+        #{commodityName,jdbcType=VARCHAR},
+      </if>
+      <if test="commodityType != null">
+        #{commodityType,jdbcType=INTEGER},
+      </if>
+      <if test="commodityPrice != null">
+        #{commodityPrice,jdbcType=DOUBLE},
+      </if>
+      <if test="commodityTotal != null">
+        #{commodityTotal,jdbcType=BIGINT},
+      </if>
+      <if test="commoditySurplus != null">
+        #{commoditySurplus,jdbcType=BIGINT},
+      </if>
+      <if test="isDeleted != null">
+        #{isDeleted,jdbcType=VARCHAR},
+      </if>
+      <if test="commodityInfo != null">
+        #{commodityInfo,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="commodityImg != null">
+        #{commodityImg,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="commodityOtherImgUrls != null">
+        #{commodityOtherImgUrls,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.wishes.market.model.CommodityDoExample" resultType="java.lang.Long">
+    select count(*) from t_business_commodity
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="oredCriteria.size != 0">
+      and is_deleted = 'N'
+    </if>
+    <if test="oredCriteria.size == 0">
+      where is_deleted = 'N'
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update t_business_commodity
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.commodityName != null">
+        commodity_name = #{record.commodityName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.commodityType != null">
+        commodity_type = #{record.commodityType,jdbcType=INTEGER},
+      </if>
+      <if test="record.commodityPrice != null">
+        commodity_price = #{record.commodityPrice,jdbcType=DOUBLE},
+      </if>
+      <if test="record.commodityTotal != null">
+        commodity_total = #{record.commodityTotal,jdbcType=BIGINT},
+      </if>
+      <if test="record.commoditySurplus != null">
+        commodity_surplus = #{record.commoditySurplus,jdbcType=BIGINT},
+      </if>
+      <if test="record.isDeleted != null">
+        is_deleted = #{record.isDeleted,jdbcType=VARCHAR},
+      </if>
+      <if test="record.commodityInfo != null">
+        commodity_info = #{record.commodityInfo,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.commodityImg != null">
+        commodity_img = #{record.commodityImg,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.commodityOtherImgUrls != null">
+        commodity_other_img_urls = #{record.commodityOtherImgUrls,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map">
+    update t_business_commodity
+    set id = #{record.id,jdbcType=INTEGER},
+      commodity_name = #{record.commodityName,jdbcType=VARCHAR},
+      commodity_type = #{record.commodityType,jdbcType=INTEGER},
+      commodity_price = #{record.commodityPrice,jdbcType=DOUBLE},
+      commodity_total = #{record.commodityTotal,jdbcType=BIGINT},
+      commodity_surplus = #{record.commoditySurplus,jdbcType=BIGINT},
+      is_deleted = #{record.isDeleted,jdbcType=VARCHAR},
+      commodity_info = #{record.commodityInfo,jdbcType=LONGVARCHAR},
+      commodity_img = #{record.commodityImg,jdbcType=LONGVARCHAR},
+      commodity_other_img_urls = #{record.commodityOtherImgUrls,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update t_business_commodity
+    set id = #{record.id,jdbcType=INTEGER},
+      commodity_name = #{record.commodityName,jdbcType=VARCHAR},
+      commodity_type = #{record.commodityType,jdbcType=INTEGER},
+      commodity_price = #{record.commodityPrice,jdbcType=DOUBLE},
+      commodity_total = #{record.commodityTotal,jdbcType=BIGINT},
+      commodity_surplus = #{record.commoditySurplus,jdbcType=BIGINT},
+      is_deleted = #{record.isDeleted,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wishes.market.model.CommodityDo">
+    update t_business_commodity
+    <set>
+      <if test="commodityName != null">
+        commodity_name = #{commodityName,jdbcType=VARCHAR},
+      </if>
+      <if test="commodityType != null">
+        commodity_type = #{commodityType,jdbcType=INTEGER},
+      </if>
+      <if test="commodityPrice != null">
+        commodity_price = #{commodityPrice,jdbcType=DOUBLE},
+      </if>
+      <if test="commodityTotal != null">
+        commodity_total = #{commodityTotal,jdbcType=BIGINT},
+      </if>
+      <if test="commoditySurplus != null">
+        commodity_surplus = #{commoditySurplus,jdbcType=BIGINT},
+      </if>
+      <if test="isDeleted != null">
+        is_deleted = #{isDeleted,jdbcType=VARCHAR},
+      </if>
+      <if test="commodityInfo != null">
+        commodity_info = #{commodityInfo,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="commodityImg != null">
+        commodity_img = #{commodityImg,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="commodityOtherImgUrls != null">
+        commodity_other_img_urls = #{commodityOtherImgUrls,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+    and is_deleted = 'N'
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.wishes.market.model.CommodityDo">
+    update t_business_commodity
+    set commodity_name = #{commodityName,jdbcType=VARCHAR},
+      commodity_type = #{commodityType,jdbcType=INTEGER},
+      commodity_price = #{commodityPrice,jdbcType=DOUBLE},
+      commodity_total = #{commodityTotal,jdbcType=BIGINT},
+      commodity_surplus = #{commoditySurplus,jdbcType=BIGINT},
+      is_deleted = #{isDeleted,jdbcType=VARCHAR},
+      commodity_info = #{commodityInfo,jdbcType=LONGVARCHAR},
+      commodity_img = #{commodityImg,jdbcType=LONGVARCHAR},
+      commodity_other_img_urls = #{commodityOtherImgUrls,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wishes.market.model.CommodityDo">
+    update t_business_commodity
+    set commodity_name = #{commodityName,jdbcType=VARCHAR},
+      commodity_type = #{commodityType,jdbcType=INTEGER},
+      commodity_price = #{commodityPrice,jdbcType=DOUBLE},
+      commodity_total = #{commodityTotal,jdbcType=BIGINT},
+      commodity_surplus = #{commoditySurplus,jdbcType=BIGINT},
+      is_deleted = #{isDeleted,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+    and is_deleted = 'N'
+  </update>
+</mapper>

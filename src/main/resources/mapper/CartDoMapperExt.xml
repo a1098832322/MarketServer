@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wishes.market.mapper.CartDoMapperExt">
+    <resultMap id="BaseCartResultMap"
+               type="com.wishes.market.dto.CartDto">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="commodity_name" jdbcType="VARCHAR"
+                property="commodityName"/>
+        <result column="commodity_type" jdbcType="INTEGER"
+                property="commodityType"/>
+        <result column="commodity_price" jdbcType="DOUBLE"
+                property="commodityPrice"/>
+        <result column="commodity_total" jdbcType="BIGINT"
+                property="commodityTotal"/>
+        <result column="commodity_surplus" jdbcType="BIGINT"
+                property="commoditySurplus"/>
+        <result column="is_deleted" jdbcType="VARCHAR" property="isDeleted"/>
+        <result column="number" jdbcType="INTEGER"
+                property="number"/>
+        <result column="total_price" jdbcType="DOUBLE"
+                property="totalPrice"/>
+    </resultMap>
+    <resultMap extends="BaseCartResultMap" id="CartResultMapWithBLOBs"
+               type="com.wishes.market.dto.CartDto">
+        <result column="commodity_info" jdbcType="LONGVARCHAR"
+                property="commodityInfo"/>
+        <result column="commodity_other_img_urls" jdbcType="LONGVARCHAR"
+                property="commodityImg"/>
+    </resultMap>
+
+    <select id="queryCart"
+            resultMap="CartResultMapWithBLOBs">
+    SELECT
+        commodity.id,
+	    cart.number,
+	    cart.total_price,
+	    commodity.commodity_name,
+	    commodity.commodity_info,
+	    commodity.commodity_price,
+	    commodity.commodity_other_img_urls
+    FROM
+	    t_business_user_cart cart
+    LEFT JOIN t_business_commodity commodity ON cart.cid = commodity.id
+    WHERE
+	    cart.uid = #{uId} and cart.is_purchased = #{purchased}
+	    and cart.is_deleted = 'N'
+    ORDER BY
+	    commodity.id ASC
+    LIMIT #{start},#{offset}
+
+    </select>
+
+    <select id="countCart" resultType="java.lang.Integer">
+        select count(t.id) from (
+          select cart.number ,cart.total_price,commodity.*
+          from t_business_user_cart cart
+              LEFT JOIN t_business_commodity commodity
+          on cart.cid = commodity.id
+          where cart.uid = #{uId} and cart.is_purchased = #{purchased}
+          and cart.is_deleted = 'N'
+        ) t
+    </select>
+</mapper>

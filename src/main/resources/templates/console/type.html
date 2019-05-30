@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>商品类别展示 - 商城服务端控制台</title>
+    <script src="../../js/jquery-3.3.1.js"></script>
+    <link rel="stylesheet" href="../../css/style.css">
+    <script>
+        $(function () {
+            $.ajax({
+                url: "../../business/queryCommodityTypes",
+                method: "GET",
+                data: {},
+                success: function (data) {
+                    if (data.flag) {
+                        var listStr = "";
+                        //如果请求成功
+                        for (var i = 0; i < data.data.length; i++) {
+                            var obj = data.data[i];
+                            var typeId = obj.id;
+                            var typeName = obj.name;
+                            var typeImg = obj.iconPath;
+                            listStr += "<li>" +
+                                "<a href='#' onclick='queryInfoById(" +
+                                typeId + ",\"" + typeName + "\",\"" + typeImg +
+                                "\")'>"
+                                + obj.name
+                                + "</a></li>"
+                        }
+
+                        $("#list").html(listStr);
+                    } else {
+                        alert(data.message);
+                    }
+
+                },
+                error: function () {
+                    alert("系统请求出错！");
+                }
+            });
+        });
+
+        /**
+         * 查询商品信息
+         * @param a 传入a标签
+         */
+        function queryInfoById(id, name, path) {
+            //写入商品详情信息
+            var str = "类型名：" + name + "<br>";
+
+            $("#main_content").html(str);
+
+            //写入图片数据
+            $("#img").attr("src", path);
+        }
+    </script>
+</head>
+<body>
+<h1>商品类别展示</h1>
+<span><a href="index">返回</a> </span>
+<div class="left">
+    <ul id="list">
+
+    </ul>
+</div>
+<div class="right">
+    <div id="img-content">
+        <img src="" alt="商品类型图片" title="商品类型图片" id="img"/>
+    </div>
+    <div id="main_content">
+
+    </div>
+
+</div>
+
+</body>
+</html>

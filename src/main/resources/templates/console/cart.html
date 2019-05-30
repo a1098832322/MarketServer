@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户购物车展示 - 商城服务端控制台</title>
+    <script src="../../js/jquery-3.3.1.js"></script>
+    <link rel="stylesheet" href="../../css/style.css">
+    <script>
+        $(function () {
+            $.ajax({
+                url: "../listUser",
+                method: "GET",
+                data: {
+                    "limit": 999999,
+                    "page": 1
+                },
+                success: function (data) {
+                    if (data.flag) {
+                        var listStr = "";
+                        //如果请求成功
+                        for (var i = 0; i < data.data.length; i++) {
+                            listStr += "<li>" +
+                                "<a href='#' onclick='queryInfoById(\"../../business/queryCartList?uId="
+                                + data.data[i].id + "\")'>("
+                                + data.data[i].account + ") " + data.data[i].uname
+                                + "</a></li>"
+                        }
+
+                        $("#list").html(listStr);
+                    } else {
+                        alert(data.message);
+                    }
+
+                },
+                error: function () {
+                    alert("系统请求出错！");
+                }
+            });
+        });
+
+        /**
+         * 查询商品信息
+         * @param a 传入a标签
+         */
+        function queryInfoById(a) {
+            $.ajax({
+                url: a.toString(),
+                method: "GET",
+                data: {
+                    "limit": 999999,
+                    "page": 1
+                },
+                success: function (data) {
+                    if (data.flag) {
+                        //写入商品详情信息
+                        var users = data.data.lists;
+                        var str = "<ul>";
+                        var count = 0;
+                        for (var i = 0; i < users.length; i++) {
+                            str += "<li>" + users[i].commodityName + "&nbsp;&nbsp;&nbsp;"
+                                + "单价：" + users[i].commodityPrice + "元/件&nbsp;&nbsp;&nbsp;"
+                                + "购买数量：" + users[i].number + "件&nbsp;&nbsp;&nbsp;"
+                                + "小记：" + users[i].totalPrice + "元"
+                                + "</li>";
+
+                            //计算总价格
+                            count += users[i].totalPrice;
+                        }
+                        str += "</ul><br><br>共计： " + count + "元";
+                        $("#main_content").html(str);
+                    } else {
+                        alert(data.message == null ? "服务器响应异常！" : data.message);
+                    }
+                },
+                error: function () {
+                    alert("系统请求出错！");
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+<h1>用户购物车信息</h1>
+<span><a href="index">返回</a> </span>
+<div class="left">
+    <ul id="list">
+
+    </ul>
+</div>
+<div class="right">
+    <div id="main_content">
+
+    </div>
+</div>
+
+</body>
+</html>

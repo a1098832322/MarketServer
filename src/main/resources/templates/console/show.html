@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>商品展示 - 商城服务端控制台</title>
+    <script src="../../js/jquery-3.3.1.js"></script>
+    <link rel="stylesheet" href="../../css/style.css">
+    <script>
+        $(function () {
+            $.ajax({
+                url: "../../business/queryPage",
+                method: "GET",
+                data: {
+                    "limit": 999999,
+                    "page": 1
+                },
+                success: function (data) {
+                    if (data.flag) {
+                        var listStr = "";
+                        //如果请求成功
+                        for (var i = 0; i < data.data.lists.length; i++) {
+                            listStr += "<li>" +
+                                "<a href='#' onclick='queryInfoById(\"../../business/queryCommodityInfoById?CommodityId="
+                                + data.data.lists[i].id + "\")'>"
+                                + data.data.lists[i].commodityName
+                                + "</a></li>"
+                        }
+
+                        $("#list").html(listStr);
+                    } else {
+                        alert(data.message);
+                    }
+
+                },
+                error: function () {
+                    alert("系统请求出错！");
+                }
+            });
+        });
+
+        /**
+         * 查询商品信息
+         * @param a 传入a标签
+         */
+        function queryInfoById(a) {
+            $.ajax({
+                url: a.toString(),
+                method: "GET",
+                success: function (data) {
+                    if (data.flag) {
+                        //写入商品详情信息
+                        var commodity = data.data;
+                        var str = "商品名：" + commodity.commodityName + "<br>"
+                            + "商品单价：" + commodity.commodityPrice + "<br>"
+                            + "商品剩余量：" + commodity.commoditySurplus + "<br>"
+                            + "商品简介：" + commodity.commodityInfo + "<br>"
+                        $("#main_content").html(str);
+
+                        //写入图片数据
+                        $("#img").attr("src", commodity.commodityImg);
+                    } else {
+                        alert(data.message == null ? "服务器响应异常！" : data.message);
+                    }
+                },
+                error: function () {
+                    alert("系统请求出错！");
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+<h1>商品展示</h1>
+<span><a href="index">返回</a> </span>
+<div class="left">
+    <ul id="list">
+
+    </ul>
+</div>
+<div class="right">
+    <div id="img-content">
+        <img src="" alt="商品图片" title="商品图片" id="img"/>
+    </div>
+    <div id="main_content">
+
+    </div>
+
+</div>
+
+</body>
+</html>

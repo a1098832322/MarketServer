@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<!--根节点 -->
+<generatorConfiguration>
+    <!-- 从resource开始往下 -->
+    <properties resource="application-local.properties"/>
+
+    <!-- 必须 指定生成一组对象的环境 -->
+    <!-- MyBatis3Simple ,  MyBatis3-->
+    <context id="Mysql" targetRuntime="MyBatis3" defaultModelType="flat">
+        <!--分隔符 -->
+        <property name="autoDelimitKeywords" value="true"/>
+        <property name="beginningDelimiter" value="`"/>
+        <property name="endingDelimiter" value="`"/>
+        <plugin type="com.wishes.market.utils.generator.DswGeneratePlugin"/>
+
+        <!-- 注释 规则-->
+        <commentGenerator
+                type="com.wishes.market.utils.generator.MyCommentGenerator"/>
+        <!-- 配置数据库连接 -->
+        <jdbcConnection
+                driverClass="${spring.datasource.druid.primary.driver-class-name}"
+                connectionURL="${spring.datasource.druid.primary.url}"
+                userId="${spring.datasource.druid.primary.username}"
+                password="${spring.datasource.druid.primary.password}"/>
+
+        <javaModelGenerator
+                targetPackage="com.wishes.market.model"
+                targetProject="src/main/java">
+        </javaModelGenerator>
+        <sqlMapGenerator
+                targetPackage="mapper"
+                targetProject="src/main/resources">
+        </sqlMapGenerator>
+        <javaClientGenerator
+                targetPackage="com.wishes.market.mapper"
+                targetProject="src/main/java"
+                type="XMLMAPPER">
+        </javaClientGenerator>
+        <!--<table tableName="t_sys_user" domainObjectName="UserDo"-->
+               <!--enableDeleteByExample="false">-->
+            <!--<columnOverride column="id" property="id" javaType="Long"-->
+                            <!--jdbcType="INTEGER"/>-->
+        <!--</table>-->
+        <!--<table tableName="t_business_commodity" domainObjectName="CommodityDo"-->
+               <!--enableDeleteByExample="false">-->
+            <!--<columnOverride column="id" property="id" javaType="Long"-->
+                            <!--jdbcType="INTEGER"/>-->
+        <!--</table>-->
+        <!--<table tableName="t_business_commodity_type"-->
+               <!--domainObjectName="CommodityTypeDo"-->
+               <!--enableDeleteByExample="false">-->
+            <!--<columnOverride column="id" property="id" javaType="Long"-->
+                            <!--jdbcType="INTEGER"/>-->
+        <!--</table>-->
+        <!--<table tableName="t_business_user_cart" domainObjectName="CartDo"-->
+               <!--enableDeleteByExample="false">-->
+            <!--<columnOverride column="id" property="id" javaType="Long"-->
+                            <!--jdbcType="INTEGER"/>-->
+        <!--</table>-->
+    </context>
+</generatorConfiguration>

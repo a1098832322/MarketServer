@@ -1,0 +1,34 @@
+.form-item {
+    width: 700px;
+}
+
+.form-item input {
+    width: 150px;
+}
+
+.left {
+    height: auto;
+    width: 300px;
+}
+
+.left ul {
+    width: 100%;
+    height: auto;
+    float: left;
+}
+
+#img-content{
+    width: 400px;
+    height: 400px;
+}
+
+#img{
+    width: 380px;
+    height: 380px;
+}
+
+.right {
+    height: auto;
+    width: 800px;
+    float: right;
+}

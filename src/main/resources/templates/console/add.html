@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>商品添加 - 商城服务端控制台</title>
+    <script src="../../js/jquery-3.3.1.js"></script>
+    <link rel="stylesheet" href="../../css/style.css">
+    <script>
+        $(function () {
+            $.ajax({
+                url: "../queryCommodityType",
+                method: "GET",
+                success: function (data) {
+                    var options = "";
+
+                    for (var i = 0; i < data.data.length; i++) {
+                        options += "<option value=\"" + data.data[i].id + "\">"
+                            + data.data[i].name + "</option>";
+                    }
+
+                    $("#type").html(options);
+                },
+                error: function () {
+                    alert("系统请求出错！");
+                }
+            });
+        });
+
+        /**
+         * 提价信息
+         */
+        function submitData() {
+            $.ajax({
+                url: "../addCommodity",
+                method: "POST",
+                data: {
+                    "commodityName": $("#name").val(),
+                    "commodityType": $("#type").val(),
+                    "commodityInfo": $("#info").val(),
+                    "commodityImg": $("#img").val(),
+                    "commodityPrice": $("#price").val(),
+                    "commodityTotal": $("#total").val()
+                },
+                success: function (data) {
+                    alert(data.message);
+                },
+                error: function () {
+                    alert("提交失败！");
+                }
+            });
+        }
+
+        /**
+         * 清空base64输入框
+         */
+        function clearText() {
+            $("#img").val("");
+        }
+    </script>
+</head>
+<body>
+<h1>添加商品</h1>
+<span><a href="index">返回</a> </span>
+<center>
+    <form action="" id="form" method="post">
+        <div class="form-item">
+            <label>商品名称：</label>
+            <input name="commodityName" type="text" id="name"
+                   placeholder="请输入商品名称"/>
+        </div>
+
+        <div class="form-item">
+            <label>商品类型：</label>
+            <select name="commodityType" id="type">
+                <option></option>
+            </select>
+        </div>
+
+        <div class="form-item">
+            <label>商品描述信息：</label>
+            <textarea name="commodityInfo" cols="50" rows="3"
+                      id="info"></textarea>
+        </div>
+
+        <div class="form-item">
+            <label>商品图片编码：</label>
+            <textarea name="commodityImg" cols="50" rows="5" value=""
+                      id="img"></textarea>
+        </div>
+        <input type="button" value="清空文本域" onclick="clearText()"/>
+
+        <div class="form-item">
+            <label>商品单价：</label>
+            <input name="commodityPrice" type="text"
+                   id="price" placeholder="请输入商品单价"/>
+        </div>
+
+        <div class="form-item">
+            <label>商品总量：</label>
+            <input name="commodityTotal" type="number" min="1"
+                   id="total" placeholder="请输入商品总数"/>
+        </div>
+
+        <div class="form-item">
+            <input type="button" onclick="submitData()" value="提交"/>
+        </div>
+    </form>
+</center>
+</body>
+</html>
