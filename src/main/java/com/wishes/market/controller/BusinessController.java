@@ -46,7 +46,7 @@ public class BusinessController {
             response = ResultUtil.class, responseContainer = "Map", produces = "application/json")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "commodityType", value = "商品类型id",
-                    required = false, paramType = "query", dataType = "int")
+                    paramType = "query", dataType = "int")
     })
     @RequestMapping(value = "/queryPage", method = RequestMethod.GET)
     public PageDto<CommodityDo> queryCommodities(CommodityQueryRequest request) {

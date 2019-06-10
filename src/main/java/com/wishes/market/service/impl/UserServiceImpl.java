@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService {
                             CommConfig.MARKET_KEY);
                     if (passInDb.equals(encryptPwdStr)) {
                         // TODO: 2019/1/24 可能要做一些持久化鉴权操作
-
+                        // 先不做了算了！
                         return uid + "," + StringConstant.LOGIN_SUCCESS + "," + userName;
                     }
                 } catch (Exception e) {

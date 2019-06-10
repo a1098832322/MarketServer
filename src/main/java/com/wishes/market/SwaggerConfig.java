@@ -1,5 +1,6 @@
 package com.wishes.market;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +20,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
  */
 @Configuration
 @EnableSwagger2
+@ConditionalOnProperty(prefix = "swagger", value = {"enable"}, havingValue = "true")
 public class SwaggerConfig {
     @Bean
     public Docket createRestApi() {

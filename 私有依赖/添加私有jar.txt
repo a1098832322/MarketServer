@@ -1,0 +1,5 @@
+#工具集合
+mvn install:install-file -Dfile=Utils-1.0-SNAPSHOT.jar -DgroupId=com.zl -DartifactId=utils -Dversion=1.0.0 -Dpackaging=jar
+
+#source包
+mvn install:install-file -Dfile=Utils-1.0-SNAPSHOT-sources.jar -DgroupId=com.zl -DartifactId=utils -Dversion=1.0.0 -Dpackaging=jar -Dclassifier=sources
