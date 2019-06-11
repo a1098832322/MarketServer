@@ -2,10 +2,7 @@ package com.wishes.market;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * springboot runner
@@ -13,21 +10,20 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
  * @author 郑龙
  */
 @SpringBootApplication
-public class MarketApplication extends WebMvcConfigurerAdapter {
+public class MarketApplication implements WebMvcConfigurer {
 
     public static void main(String[] args) {
         SpringApplication.run(MarketApplication.class, args);
     }
 
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/**").addResourceLocations("classpath:/static/");
-        registry.addResourceHandler("swagger-ui.html")
-                .addResourceLocations("classpath:/META-INF/resources/");
-        registry.addResourceHandler("/webjars/**")
-                .addResourceLocations("classpath:/META-INF/resources/webjars/");
-        super.addResourceHandlers(registry);
-    }
+//    @Override
+//    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+//        registry.addResourceHandler("/**").addResourceLocations("classpath:/static/");
+//        registry.addResourceHandler("swagger-ui.html")
+//                .addResourceLocations("classpath:/META-INF/resources/");
+//        registry.addResourceHandler("/webjars/**")
+//                .addResourceLocations("classpath:/META-INF/resources/webjars/");
+//    }
 
     //不进行拦截处理
     // /**
@@ -41,13 +37,13 @@ public class MarketApplication extends WebMvcConfigurerAdapter {
     //     super.addInterceptors(registry);
     // }
 
-    /**
-     * 支持跨域请求
-     *
-     * @param registry
-     */
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**").allowedMethods("*").allowedOrigins("*").allowedHeaders("*").maxAge(30 * 1000);
-    }
+//    /**
+//     * 支持跨域请求
+//     *
+//     * @param registry
+//     */
+//    @Override
+//    public void addCorsMappings(CorsRegistry registry) {
+//        registry.addMapping("/**").allowedMethods("*").allowedOrigins("*").allowedHeaders("*").maxAge(30 * 1000);
+//    }
 }
