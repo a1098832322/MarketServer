@@ -7,6 +7,10 @@
 >基于Springboot + Mybatis框架，Maven构建。使用swagger来显示Restful风格的接口。
 >项目打包: mvn clean install
 
+## 项目部署
+* 因为商品表中包含有base64编码后的缩略图，所以使用Navicat等工具可能会出现导入失败的错误。这里推荐使用官方的MySQL Workbench导入  
+* 编译后默认输出jar包，需要放到Tomcat中部署则需要先修改pom文件内的打包格式，改成war
+
 ## 2019年6月11日14:40:03
 #### 更新
 * 项目升级至Springboot 2
