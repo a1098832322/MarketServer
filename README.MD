@@ -1,4 +1,7 @@
 # 购物商城服务端
+![](https://img.shields.io/badge/JDK-1.8-brightgreen.svg)
+![](https://img.shields.io/badge/License-Apache%202.0-orange.svg)
+
 ##### Rqeuired 
 * JDK 1.8  
 * Springboot
