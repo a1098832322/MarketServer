@@ -3,11 +3,11 @@ package com.wishes.market.controller;
 import com.wishes.market.config.CommConfig;
 import com.wishes.market.dto.CartDto;
 import com.wishes.market.dto.CommodityQueryRequest;
-import com.wishes.market.model.CommodityDo;
 import com.wishes.market.service.BusinessService;
 import com.wishes.market.utils.PageDto;
 import com.wishes.market.utils.ResultUtil;
 import com.wishes.market.vo.CommodityTypeVo;
+import com.wishes.market.vo.CommodityVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -49,7 +49,7 @@ public class BusinessController {
                     paramType = "query", dataType = "int")
     })
     @RequestMapping(value = "/queryPage", method = RequestMethod.GET)
-    public PageDto<CommodityDo> queryCommodities(CommodityQueryRequest request) {
+    public PageDto<CommodityVo> queryCommodities(CommodityQueryRequest request) {
         return businessService.queryCommodities(request);
     }
 
@@ -93,8 +93,10 @@ public class BusinessController {
                     dataType = "Long", required = true)
     })
     @RequestMapping(value = "/queryCommodityInfoById", method = RequestMethod.GET)
-    public CommodityDo queryCommodityInfoById(Long CommodityId) {
-        return businessService.queryCommodityInfoById(CommodityId);
+    public CommodityVo queryCommodityInfoById(Long CommodityId) {
+        CommodityVo vo = new CommodityVo();
+        BeanUtils.copyProperties(businessService.queryCommodityInfoById(CommodityId), vo);
+        return vo;
     }
 
     /**
@@ -110,7 +112,7 @@ public class BusinessController {
                     dataType = "String", required = true)
     })
     @RequestMapping(value = "/queryCommodityInfoByName", method = RequestMethod.GET)
-    public List<CommodityDo> queryCommodityInfoByName(String CommodityName) {
+    public List<CommodityVo> queryCommodityInfoByName(String CommodityName) {
         return businessService.queryCommodityInfoByName(CommodityName);
     }
 
@@ -142,7 +144,7 @@ public class BusinessController {
     }
 
     /**
-     *  刷新购物车数据
+     * 刷新购物车数据
      *
      * @param uId     用户id
      * @param cIds    商品id们

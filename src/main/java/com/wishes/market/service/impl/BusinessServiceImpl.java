@@ -11,13 +11,16 @@ import com.wishes.market.service.BusinessService;
 import com.wishes.market.service.CommodityService;
 import com.wishes.market.service.UserService;
 import com.wishes.market.utils.PageDto;
+import com.wishes.market.vo.CommodityVo;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 业务Service实现类
@@ -45,7 +48,7 @@ public class BusinessServiceImpl implements BusinessService {
     private CartDoMapperExt cartDoMapperExt;
 
     @Override
-    public PageDto<CommodityDo> queryCommodities(CommodityQueryRequest request) {
+    public PageDto<CommodityVo> queryCommodities(CommodityQueryRequest request) {
         CommodityDoExample example = new CommodityDoExample();
         CommodityDoExample.Criteria criteria = example.createCriteria();
         //构造查询条件
@@ -72,13 +75,18 @@ public class BusinessServiceImpl implements BusinessService {
         }
 
         //初始化分页参数
-        PageDto<CommodityDo> page = new PageDto<>(request.getPage(),
+        PageDto<CommodityVo> page = new PageDto<>(request.getPage(),
                 request.getLimit(), total.intValue());
         example.setPageDto(page);
         //排序规则
         example.setOrderByClause("id asc");
         //查询数据
-        List<CommodityDo> list = commodityDoMapperExt.selectByExampleWithBLOBs(example);
+        List<CommodityVo> list =
+                commodityDoMapperExt.selectByExampleWithBLOBs(example).stream().map(commodityDo -> {
+                    CommodityVo vo = new CommodityVo();
+                    BeanUtils.copyProperties(commodityDo, vo);
+                    return vo;
+                }).collect(Collectors.toList());
         page.setLists(list);
 
         return page;
@@ -103,17 +111,19 @@ public class BusinessServiceImpl implements BusinessService {
     }
 
     @Override
-    public List<CommodityDo> queryCommodityInfoByName(String CommodityName) {
+    public List<CommodityVo> queryCommodityInfoByName(String CommodityName) {
         CommodityDoExample example = new CommodityDoExample();
         CommodityDoExample.Criteria criteria = example.createCriteria();
         //构造查询条件
         criteria.andIsDeletedEqualTo(CommConfig.IS_DELETE.NO.getType());
         criteria.andCommodityNameLike("%" + CommodityName + "%");
         //获得结果集
-        List<CommodityDo> resultList =
-                commodityDoMapperExt.selectByExampleWithBLOBs(example);
-
-        return resultList;
+        return commodityDoMapperExt.selectByExampleWithBLOBs(example).stream()
+                .map(commodityDo -> {
+                    CommodityVo vo = new CommodityVo();
+                    BeanUtils.copyProperties(commodityDo, vo);
+                    return vo;
+                }).collect(Collectors.toList());
     }
 
     @Override

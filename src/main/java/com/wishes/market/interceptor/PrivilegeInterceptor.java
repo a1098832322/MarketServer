@@ -1,23 +1,20 @@
 package com.wishes.market.interceptor;
 
-import com.alibaba.fastjson.JSONObject;
-import com.wishes.market.config.CheckLogin;
 import com.wishes.market.config.CommConfig;
-import com.wishes.market.config.PrintLog;
 import com.wishes.market.dto.PrivilegeInfo;
 import com.wishes.market.service.CurrentUserService;
-import com.wishes.market.utils.exception.BizException;
+import com.wishes.market.utils.CookieUtil;
 import com.wishes.market.utils.security.AESTool;
-
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * 请求拦截读取登录用户
@@ -26,77 +23,82 @@ import javax.servlet.http.HttpServletResponse;
  * @author huangt
  * @create 2018-02-01 15:13
  **/
+@Slf4j
 public class PrivilegeInterceptor extends HandlerInterceptorAdapter {
-    // private static final Logger logger = LoggerFactory.getLogger(PrivilegeInterceptor.class);
-    // @Autowired
-    // private CurrentUserService currentUserService;
-    //
-    // @Override
-    // public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-    //     //打印请求
-    //     if (!CommConfig.OPTIONS.equals(request.getMethod())) {
-    //         String token = request.getHeader("token");
-    //         if (StringUtils.isEmpty(token)) {
-    //             token = request.getParameter("token");
-    //         }
-    //         if (handler instanceof HandlerMethod) {
-    //             HandlerMethod handlerMethod = (HandlerMethod) handler;
-    //             //打印日志
-    //             boolean outLog = true;
-    //             PrintLog printLog = handlerMethod.getMethodAnnotation(PrintLog.class);
-    //             if (null != printLog && printLog.required() == false) {
-    //                 outLog = false;
-    //             }
-    //             if (outLog) {
-    //                 StringBuilder sb = new StringBuilder();
-    //                 sb.append(request.getRemoteHost())
-    //                         .append(" ")
-    //                         .append(request.getMethod())
-    //                         .append(" ")
-    //                         .append(request.getRequestURL()).append(" params:").append(JSONObject.toJSONString(request.getParameterMap()));
-    //                 logger.info(sb.toString());
-    //                 /*    post body中的内容 流被读取一次 后面controller就不能再读取绑定参数, TODO;HUANGTAO;后续优化
-    //                 StringBuffer json = new StringBuffer();
-    //                 String line = null;
-    //                 BufferedReader reader = new BufferedReader(new InputStreamReader(request.getInputStream()));
-    //                 while ((line = reader.readLine()) != null) {
-    //                     json.append(line);
-    //                 }*/
-    //             }
-    //             //检查级别  方法 大于 类
-    //             CheckLogin checkLogin = handlerMethod.getMethodAnnotation(CheckLogin.class);
-    //             if (null == checkLogin) {
-    //                 checkLogin = handlerMethod.getBeanType().getAnnotation(CheckLogin.class);
-    //             }
-    //             if (null != checkLogin && checkLogin.required() && StringUtils.isEmpty(token)) {
-    //                 throw new BizException("token失效,请重新登录!");
-    //             }
-    //         }
-    //         //获取登录用户 存储到 会话单例user
-    //         if (StringUtils.isNotEmpty(token)) {
-    //             String userJson = null;
-    //             try {
-    //                 userJson = AESTool.decrypt(token, CommConfig.GUANGKONG_KEY);
-    //             } catch (Exception e) {
-    //                 throw new BizException("token不合法,请重新登录!");
-    //             }
-    //             if (StringUtils.isNotEmpty(userJson)) {
-    //                 PrivilegeInfo privilegeInfo = JSONObject.parseObject(userJson, PrivilegeInfo.class);
-    //                 // 获得ip
-    //                 String hostContent = request.getHeader("Host");
-    //                 String localIp = hostContent.substring(0, hostContent.indexOf(":"));
-    //                 privilegeInfo.setIp(localIp);
-    //                 currentUserService.setPvginfo(privilegeInfo);
-    //             }
-    //         }
-    //     }
-    //
-    //     return super.preHandle(request, response, handler);
-    // }
-    //
-    // @Override
-    // public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-    //     currentUserService.clean();
-    //     super.afterCompletion(request, response, handler, ex);
-    // }
+    @Autowired(required = false)
+    private CurrentUserService currentUserService;
+
+    private static List<String> urls = new LinkedList<>();
+
+    /**
+     * 允许访问的URL列表
+     */
+    static {
+        //swagger
+        urls.add("/swagger-resources/");
+        urls.add("/swagger-ui.html");
+        urls.add("/webjars/");
+        urls.add("/v2/");
+    }
+
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        //对URL白名单放行
+        if (urls.contains(request.getRequestURI())) {
+            return true;
+            //业务接口
+        } else if (request.getRequestURI().startsWith("/business/")
+                //登录登出接口
+                || request.getRequestURI().startsWith("/control/")
+                //Api
+                || request.getRequestURI().startsWith("/api/")) {
+            // 不拦截api请求，ApiAuth会对api请求拦截鉴权。
+            return true;
+        } else {
+            Object userName = null;
+            if (request.getSession() != null) {
+                userName = request.getSession().getAttribute("userName");
+            }
+
+            if ((userName instanceof String)) {
+                //如果用户名存在且有效
+                //写入用户Service
+                PrivilegeInfo privilegeInfo = new PrivilegeInfo();
+                privilegeInfo.setAccount(userName.toString());
+                currentUserService.setPvginfo(privilegeInfo);
+                log.info("用户：" + userName.toString() + " 已登陆！");
+                return true;
+            } else {
+                //检测cookie
+                if (CookieUtil.isHasCookie(request)) {
+                    //使用cookie
+                    try {
+                        //拿到加密后的sessionId
+                        String sessionId = CookieUtil.getCookie(request);
+                        //AES解密
+                        sessionId = AESTool.decrypt(sessionId,
+                                CommConfig.MARKET_KEY);
+
+                        HttpSession session =
+                                request.getSession().getSessionContext()
+                                        .getSession(sessionId);
+                        String name = (String) session.getAttribute("userName");
+                        if (StringUtils.isNotBlank(name)) {
+                            //写入用户Service
+                            PrivilegeInfo privilegeInfo = new PrivilegeInfo();
+                            privilegeInfo.setAccount(name);
+                            currentUserService.setPvginfo(privilegeInfo);
+
+                            return true;
+                        }
+                    } catch (Exception e) {
+                        //Cookie和Session验证不通过,则重定向到登录页
+                        response.sendRedirect("/views/login");
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
 }

@@ -1,6 +1,7 @@
 package com.wishes.market.controller;
 
 import com.wishes.market.model.CommodityDo;
+import com.wishes.market.service.BusinessService;
 import com.wishes.market.service.CommodityService;
 import com.wishes.market.service.ConsoleService;
 import com.wishes.market.utils.ResultUtil;
@@ -26,6 +27,9 @@ public class ConsoleController {
 
     @Autowired(required = false)
     private ConsoleService consoleService;
+
+    @Autowired
+    private BusinessService businessService;
 
 
     /************
@@ -88,4 +92,15 @@ public class ConsoleController {
         return ResultUtil.success("拉取用户列表成功！", consoleService.listUser());
     }
 
+    /**
+     * 根据商品id查询商品详情
+     *
+     * @param CommodityId 商品id
+     * @return 商品model
+     */
+    @ResponseBody
+    @RequestMapping(value = "/queryCommodityInfoById", method = RequestMethod.GET)
+    public CommodityDo queryCommodityInfoById(Long CommodityId) {
+        return businessService.queryCommodityInfoById(CommodityId);
+    }
 }

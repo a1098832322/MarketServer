@@ -6,6 +6,7 @@ import com.wishes.market.dto.CommodityQueryRequest;
 import com.wishes.market.model.CommodityDo;
 import com.wishes.market.model.CommodityTypeDo;
 import com.wishes.market.utils.PageDto;
+import com.wishes.market.vo.CommodityVo;
 
 import java.util.List;
 
@@ -22,7 +23,7 @@ public interface BusinessService {
      * @param request 商品分页查询请求
      * @return pageDto
      */
-    PageDto<CommodityDo> queryCommodities(CommodityQueryRequest request);
+    PageDto<CommodityVo> queryCommodities(CommodityQueryRequest request);
 
 
     /**
@@ -46,7 +47,7 @@ public interface BusinessService {
      * @param CommodityName 商品名称
      * @return 商品Model
      */
-    List<CommodityDo> queryCommodityInfoByName(String CommodityName);
+    List<CommodityVo> queryCommodityInfoByName(String CommodityName);
 
     /**
      * 加入购物车
